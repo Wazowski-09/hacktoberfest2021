@@ -1,0 +1,99 @@
+R = int(input("Enter the number of rows:"))
+C = int(input("Enter the number of columns:"))
+
+matrix = []
+print("Enter the entries rowwise:")
+for i in range(R):
+    a = []
+    for j in range(C):
+        a.append(int(input()))
+    matrix.append(a)
+
+def checkdet():
+    if(R == C):
+        print("Determinant =" , det(matrix,R))
+    else:
+        print("Can't find determinant because row not equal columns")
+
+def minor(matrix, i, j):
+    c = matrix
+    c = c[:i] + c[i+1:]
+    for k in range(0, len(c)):
+        c[k] = c[k][:j]+c[k][j+1:]
+    return c
+
+
+def det(matrix, n):
+    if n == 1:
+        return matrix[0][0]
+    if n == 2:
+        return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0]
+    sum = 0
+    for i in range(0, n):
+        m = minor(matrix, 0, i)
+        sum = sum + ((-1)**i)*matrix[0][i] * det(m, n-1)
+    return sum
+
+
+def cofactor(matrix):
+    re_cofactor = [[0 for i in range(len(matrix))]
+                   for j in range(len(matrix[0]))]
+    for j in range(0, len(matrix)):
+        for i in range(0, len(matrix[0])):
+            re_cofactor[j][i] = minor(matrix, j, i)
+    return re_cofactor
+
+
+def transpose(matrix):
+    re_transpose = [[0 for i in range(len(matrix))]
+                    for j in range(len(matrix[0]))]
+    for i in range(len(matrix)):
+        for j in range(len(matrix[0])):
+            re_transpose[j][i] = matrix[i][j]
+    return re_transpose
+
+
+def multiply_number(matrix, det):
+    for j in range(0, len(matrix)):
+        for i in range(0, len(matrix[0])):
+            matrix[j][i] = (1/det) * matrix[j][i]
+    return matrix
+
+
+def adjoint(matrix):
+    det_matrix = det(matrix, len(matrix))
+    re_adjoint = [[0 for i in range(len(matrix))]
+                  for j in range(len(matrix[0]))]
+    re_cofactor1 = cofactor(matrix)
+    for j in range(0, len(matrix)):
+        for i in range(0, len(matrix[0])):
+            re_adjoint[j][i] = ((-1)**((i+1)+(j+1))) * \
+                (det(re_cofactor1[j][i], len(re_cofactor1[j][i])))
+
+    result = transpose(re_adjoint)
+    final = multiply_number(result, det_matrix)
+    return final
+
+
+def getMatrixMinor(m, i, j):
+    return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]
+
+print("Original : ")
+for m in matrix:
+   print(m)
+print("----------------------------------------------")
+print("Result : ")
+checkdet()
+print("----------------------------------------------")
+print("Adjoint : ")
+m = []
+n = []
+f = []
+for j in range(0, 4):
+    for i in range(0, 4):
+        print(getMatrixMinor(matrix, j, i))
+        m.append(det(getMatrixMinor(matrix, j, i),3))
+print("----------------------------------------------")
+print("Answer : ")
+for r in adjoint(matrix):
+    print(r)
